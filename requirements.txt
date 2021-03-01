@@ -1,0 +1,4 @@
+fitparse
+pandas
+cv2
+numpy
