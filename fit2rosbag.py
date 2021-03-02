@@ -1,11 +1,20 @@
 """
-    Read from Fit files and save them to a bag file. Do not publish topics in ROS.
+    Read from Fit files and save them to a bag file. Do not publish topics in ROS, just write to rosbag.
+
+    USAGE:
+    $python fit2rosbag.py -f testdata/test.fit -v testdata/testvideo.mp4 -b rosbag.bag
+
+    USAGE:
+fit2rosbag.py -f <fitfile> -v <videofile> -b <rosbag>
+
+    --fitfile: file in FIT GARMIN format.
+    --videofile: the video in any format readable by Opencv.
+    --rosbag:
 """
 import fitparse
 from helpers import get_properties, time_operations, gps_messages, videoframes
-from helpers.ros_publish import RosPublisher
+from helpers.ros_save import RosSaver
 import pandas as pd
-import time
 import sys, getopt
 import rospy
 
@@ -20,12 +29,16 @@ def get_command_line_args(argv):
         print 'fit2rosbab: save fit data to rosbag file'
         print 'USAGE:'
         print 'fit2rosbag.py -f <fitfile> -v <videofile> -b <rosbag>'
+        print 'OPTIONS: \n --fitfile\n --videofile\n --rosbag'
+        print 'The FIT file in Garmin format, a video file in any format and the output rosbag name.'
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
             print 'fit2rosbab: save fit data to rosbag file'
             print 'USAGE:'
             print 'fit2rosbag.py -f <fitfile> -v <videofile> -b <rosbag>'
+            print 'OPTIONS: \n --fitfile\n --videofile\n --rosbag'
+            print 'The FIT file in Garmin format, a video file in any format and the output rosbag name.'
             sys.exit()
         elif opt in ("-f", "--fitfile"):
             fitfilename = arg
@@ -39,33 +52,31 @@ def get_command_line_args(argv):
     return fitfilename, videofilename, rosbag
 
 
-def save_data(ros_publisher, row, gps_data, video_data):
+def save_data(ros_saver, row, gps_data, video_data):
     # publish clock, encoded in epoch time
-    ros_publisher.publish_clock(row['epoch'])
+    ros_saver.save_clock(row['epoch'])
     if row['data_type'] == 'gps_metadata':
         # if gps_metadata message read, then publish in ros
         # print 'publishing gps metadata in ROS'
         # the UTC time is encoded in every gps element
         gps = gps_data.get_by_index(row['data_index'])
-        ros_publisher.save_gps(gps)
-        ros_publisher.save_gps_speed(gps)
-        ros_publisher.save_gps_velocity(gps)
+        ros_saver.save_gps(gps)
+        ros_saver.save_gps_speed(gps)
+        ros_saver.save_gps_velocity(gps)
 
     elif row['data_type'] == 'video_frame':
         # now publish image in ros. Image indexes are consecutive in the df_global
         # at each timestep the next frame is captured
         success, image = video_data.get_next_frame()
         if success:
-            # print 'publishing image in ros'
             # either publish the raw image and the compressed one
-            # ros_publisher.publish_image(image, row['epoch'])
-            ros_publisher.save_image_compressed(image, row['epoch'])
+            ros_saver.save_image_compressed(image, row['epoch'])
         else:
             print 'ERROR CAPTURING VIDEO: MAJOR FAILURE'
             return
 
 
-def publish_video_and_sensors(fitfilename, videofilename, rosbagfilename):
+def save_video_and_sensors(fitfilename, videofilename, rosbagfilename):
     # Load the FIT file
     fitobject = fitparse.FitFile(fitfilename)
 
@@ -102,16 +113,16 @@ def publish_video_and_sensors(fitfilename, videofilename, rosbagfilename):
     # open now video to get frames
     video_data.open_video_capture()
 
-    # create a Ros publisher
-    ros_publisher = RosPublisher(rosbagfilename=rosbagfilename)
+    # create a Ros saver to save data to a rosbag file
+    ros_saver = RosSaver(rosbagfilename=rosbagfilename)
     total_rows = len(df_global)
 
-    # total_rows = 350
+    #total_rows = 350
     # for each time in the table, and depending on the data type, publish data in ros
     for index in range(0, total_rows, 1):
         print 'Completed: ', 100.0*index/total_rows, '%'
         row = df_global.iloc[index, :]
-        save_data(ros_publisher, row, gps_data, video_data)
+        save_data(ros_saver, row, gps_data, video_data)
 
     print 30*'--'
     print 'FINISHED! CHECK THE GENERATED ROSBAG FILE!'
@@ -120,6 +131,6 @@ def publish_video_and_sensors(fitfilename, videofilename, rosbagfilename):
 if __name__ == '__main__':
     [fitfile, videofile, rosbagfilename] = get_command_line_args(sys.argv[1:])
     try:
-        publish_video_and_sensors(fitfile, videofile, rosbagfilename)
+        save_video_and_sensors(fitfile, videofile, rosbagfilename)
     except rospy.ROSInterruptException:
         pass

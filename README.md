@@ -15,7 +15,7 @@ pandas
 
 USAGE
 
-fit2ros: Publisyh
+fit2ros: Publish
 $ python fit2ros.py -f testdata/test.fit -v testdata/testvideo.mp4 -d 0.1
 
 In order to work properly, roscore must be active
@@ -30,15 +30,13 @@ $python fit2rosbag.py -f testdata/test.fit -v testdata/testvideo.mp4 -b rosbag.b
 
 
 
-rosparam set use_sim_time true
 
 
 
 
 
 
-fit2rosbag
-rosbag play --clock --pause
+
 
 fit2ros broadcasts messages to the ROS ecosystem. The real-time /clock is not emulated. However, a rosbag file can be
 saved and then played back so that the real time is emulated.
@@ -67,6 +65,11 @@ Once finished, stop rosbag record and check the generated .bag file.
 4) Just replay with rosbag play
 $rosbag play test.bag
 
+5) The rosbag is saved with the time corresponding to the video and fit files
+In order to publish using this time, just use:
+$ roscore
+$ rosparam set use_sim_time true
+$ rosbag play --clock --pause rosbag.bag
 
 
 
