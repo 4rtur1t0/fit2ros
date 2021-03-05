@@ -99,21 +99,14 @@ class GPSDataList():
     def get_by_index(self, index):
         return self.data_list[index]
 
-    #get by epoch
-
     def get_lists(self):
         return self.epoch_list, self.utc_list, self.index_list
 
     def get_pandas_df(self):
-        # def create_lists():
-        #     raw_data = {'epoch': [1002, 1001, 1000, 1003, 1005, 1004],
-        #                 'data_index': [1, 2, 3, 4, 5, 6],
-        #                 'data_type': ['gps_data', 'gps_data', 'gps_data', 'gps_data', 'gps_data', 'gps_data']}
-        #     df = pd.DataFrame(raw_data)
-        #     print df
-        #     df2 = df.sort_values(by=['epoch'])
-        #
-        #     print df2
+        """
+        Get the list in df format for pandas.
+        :return:
+        """
         raw_data = {'epoch': self.epoch_list,
                     'data_index': self.index_list,
                     'utc_time': self.utc_list,

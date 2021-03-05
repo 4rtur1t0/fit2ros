@@ -12,7 +12,7 @@ import rosbag
 
 
 class RosPublisher():
-    def __init__(self, rosbagfilename=None):
+    def __init__(self):
         self.clock_publisher = rospy.Publisher('clock', Clock, queue_size=10)
         # publish lat lng and altitude from gps
         self.gps_publisher = rospy.Publisher('virb360/gps/fix', NavSatFix, queue_size=10)
@@ -23,27 +23,15 @@ class RosPublisher():
         # publish images as captured from videos
         self.image_publisher = rospy.Publisher('image/image_raw', Image, queue_size=10)
         # publish images as captured from videos
-        self.compressed_image_publisher = rospy.Publisher('image/image_raw/compressed', CompressedImage, queue_size=10)
+        #self.compressed_image_publisher = rospy.Publisher('image/image_raw/compressed', CompressedImage, queue_size=10)
         # finally init publication node
         rospy.init_node('fit2ros', anonymous=True)
-        if rosbagfilename:
-            self.bag = rosbag.Bag(rosbagfilename, 'w', compression='bz2')
-            print self.bag.get_compression_info()
-
-    def __del__(self):
-        print("Closing bag")
-        self.bag.close()
 
     def publish_clock(self, epoch):
         sim_clock = Clock()
         sim_clock.clock = rospy.Time.from_sec(epoch)
-        rospy.loginfo(sim_clock)
+        # rospy.loginfo(sim_clock)
         self.clock_publisher.publish(sim_clock)
-
-    # def save_clock(self, epoch):
-    #     sim_clock = Clock()
-    #     sim_clock.clock = rospy.Time.from_sec(epoch)
-    #     self.bag.write('clock', sim_clock, t=rospy.Time.from_sec(epoch))
 
     def publish_gps(self, gps):
         msg = NavSatFix()
@@ -65,28 +53,6 @@ class RosPublisher():
         # publish lat, lng
         self.gps_publisher.publish(msg)
 
-    # def save_gps(self, gps):
-    #     msg = NavSatFix()
-    #     msg.header = build_header(gps.epoch, 'gps')
-    #
-    #     msg.status.status = NavSatStatus.STATUS_FIX
-    #     msg.status.service = NavSatStatus.SERVICE_GPS
-    #
-    #     # Position in degrees.
-    #     msg.latitude = gps.lat
-    #     msg.longitude = gps.lng
-    #
-    #     # Altitude in metres.
-    #     msg.altitude = gps.altitude
-    #
-    #     msg.position_covariance[0] = 0
-    #     msg.position_covariance[4] = 0
-    #     msg.position_covariance[8] = 0
-    #     msg.position_covariance_type = NavSatFix.COVARIANCE_TYPE_DIAGONAL_KNOWN
-    #
-    #     # save lat, lng at that time
-    #     self.bag.write('virb360/gps/fix', msg, t=rospy.Time.from_sec(gps.epoch))
-
     def publish_gps_speed(self, gps):
         """
         Publish GPS speed as measured by the GPS on the FIT device.
@@ -100,20 +66,6 @@ class RosPublisher():
         msg.z = 0
         # publish absolute speed
         self.gps_speed_publisher.publish(msg)
-
-    # def save_gps_speed(self, gps):
-    #     """
-    #     Save GPS speed as measured by the GPS on the FIT device.
-    #     :param gps:
-    #     :return:
-    #     """
-    #     msg = Vector3()
-    #     # Position in degrees.
-    #     msg.x = gps.speed
-    #     msg.y = 0
-    #     msg.z = 0
-    #     # publish absolute speed
-    #     self.bag.write('virb360/gps/speed', msg, t=rospy.Time.from_sec(gps.epoch))
 
     def publish_gps_velocity(self, gps):
         """
@@ -129,20 +81,6 @@ class RosPublisher():
         # publish vx, vy, vz
         self.gps_velocity_publisher.publish(msg)
 
-    # def save_gps_velocity(self, gps):
-    #     """
-    #     Save a 3D velocity vector.
-    #     :param gps:
-    #     :return:
-    #     """
-    #     msg = Vector3()
-    #     # Position in degrees.
-    #     msg.x = gps.velocity[0]
-    #     msg.y = gps.velocity[1]
-    #     msg.z = gps.velocity[2]
-    #     # publish vx, vy, vz
-    #     self.bag.write('virb360/gps/velocity', msg, t=rospy.Time.from_sec(gps.epoch))
-
     def publish_image(self, image, epoch):
         """
         Publish an image in ROS. In this case, publishing from a captured video frame.
@@ -153,12 +91,6 @@ class RosPublisher():
         image_message = bridge.cv2_to_imgmsg(image, encoding="passthrough")
         image_message.header = build_header(epoch, 'image')
         self.image_publisher.publish(image_message)
-
-    # def save_image(self, image, epoch):
-    #     bridge = CvBridge()
-    #     image_message = bridge.cv2_to_imgmsg(image, encoding="passthrough")
-    #     image_message.header = build_header(epoch, 'image')
-    #     self.bag.write('image/image_raw', image_message, t=rospy.Time.from_sec(epoch))
 
     def publish_image_compressed(self, image, epoch):
         """
@@ -171,18 +103,6 @@ class RosPublisher():
         image_message.format = "png"
         image_message.data = np.array(cv2.imencode('.png', image)[1]).tostring()
         self.compressed_image_publisher.publish(image_message)
-
-    # def save_image_compressed(self, image, epoch):
-    #     """
-    #     Publish a compressed image in ROS. In this case, publishing from a captured video frame.
-    #     :param image: an opencv image
-    #     :return:
-    #     """
-    #     image_message = CompressedImage()
-    #     image_message.header = build_header(epoch, 'image')
-    #     image_message.format = "png"
-    #     image_message.data = np.array(cv2.imencode('.png', image)[1]).tostring()
-    #     self.bag.write('image/image_raw/compressed', image_message, t=rospy.Time.from_sec(epoch))
 
 
 def build_header(epoch, frame_id):

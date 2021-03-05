@@ -16,10 +16,14 @@ class RosSaver():
     Class that saves different messages to a rosbag file.
     Uses the rosbag python API to write messages.
     """
-    def __init__(self, rosbagfilename=None):
+    def __init__(self, rosbagfilename=None, imagesdirectory=None):
+        self.bag = None
+        self.imagesdirectory = None
         if rosbagfilename:
-            self.bag = rosbag.Bag(rosbagfilename, 'w', compression='bz2')
-            print self.bag.get_compression_info()
+            # self.bag = rosbag.Bag(rosbagfilename, 'w', compression='bz2')
+            self.bag = rosbag.Bag(rosbagfilename, 'w')
+        if imagesdirectory:
+            self.imagesdirectory = imagesdirectory
 
     def __del__(self):
         print("Closing bag")
@@ -81,6 +85,12 @@ class RosSaver():
         self.bag.write('virb360/gps/velocity', msg, t=rospy.Time.from_sec(gps.epoch))
 
     def save_image(self, image, epoch):
+        """
+        Saves image to rosbag and to a directory
+        :param image:
+        :param epoch:
+        :return:
+        """
         bridge = CvBridge()
         image_message = bridge.cv2_to_imgmsg(image, encoding="passthrough")
         image_message.header = build_header(epoch, 'image')
@@ -97,6 +107,17 @@ class RosSaver():
         image_message.format = "png"
         image_message.data = np.array(cv2.imencode('.png', image)[1]).tostring()
         self.bag.write('image/image_raw/compressed', image_message, t=rospy.Time.from_sec(epoch))
+
+    def save_image_to_dir(self, image, epoch):
+        """
+        Saves image to a directory
+        :param image:
+        :param epoch:
+        :return:
+        """
+        filename = self.imagesdirectory + '/' + str(epoch) + '.png'
+        cv2.imwrite(filename, image)
+
 
 
 def build_header(epoch, frame_id):

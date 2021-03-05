@@ -89,11 +89,11 @@ def get_video_start_stop_times(fitfile):
 
     for i in range(0, len(camera_events_start), 1):
         tiempo = camera_events_stop[i].get_time()-camera_events_start[i].get_time()
-        print tiempo
+        print(tiempo)
         print("---")
     start_time = camera_events_start[0].get_time()
     stop_time = camera_events_stop[0].get_time()
-    print 'CAUTION: returning the first set of start and stop'
+    print('CAUTION: returning the first set of start and stop')
     return start_time, stop_time
 
 
@@ -107,15 +107,15 @@ def get_timestamp_correlation(fitfile):
     # Iterate over all messages of type "camera_event"
     for record in fitfile.get_messages("timestamp_correlation"):
         timestamp_correlation = TimestampCorrelation(record)
-        print 'Found correlation in FIT'
-        print 'UTC time: ', timestamp_correlation.utc_timestamp, ' corresponds to'
-        print 'System seconds time (s): ', timestamp_correlation.system_timestamp
+        print('Found correlation in FIT')
+        print('UTC time: ', timestamp_correlation.utc_timestamp, ' corresponds to')
+        print('System seconds time (s): ', timestamp_correlation.system_timestamp)
         timestamp_correlations.append(timestamp_correlation)
     if len(timestamp_correlations) == 0:
-        print 'CAUTION: NO TIMESTAMP CORRELATION FOUND, SELECTING UTCTIME=JANUARY, 1ST 1970!'
+        print('CAUTION: NO TIMESTAMP CORRELATION FOUND, SELECTING UTCTIME=JANUARY, 1ST 1970!')
         return datetime.datetime(year=1970, month=1, day=1), 0.0
     elif len(timestamp_correlations) > 1:
-        print 'CAUTION: MORE THAN ONE TIMESTAMP CORRELATION FOUND, SELECTING THE LAST FOUND!'
+        print('CAUTION: MORE THAN ONE TIMESTAMP CORRELATION FOUND, SELECTING THE LAST FOUND!')
 
     utc_time_origin = timestamp_correlation.utc_timestamp - \
                       datetime.timedelta(seconds=timestamp_correlation.system_timestamp,

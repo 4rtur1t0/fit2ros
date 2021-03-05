@@ -16,7 +16,7 @@ pandas
 USAGE
 
 fit2ros: Publish
-$ python fit2ros.py -f testdata/test.fit -v testdata/testvideo.mp4 -d 0.1
+$ python fit2ros.py -f testdata/test.fit -v testdata/testvideo.mp4 -d 0.1 -s 1
 
 In order to work properly, roscore must be active
 $ roscore
@@ -26,7 +26,7 @@ fit2rosbag:
 fit2rosbag saves a rosbag file.
 All times in the rosbag are saved using the UTC times found in the FIT file.
 
-$python fit2rosbag.py -f testdata/test.fit -v testdata/testvideo.mp4 -b rosbag.bag
+$python fit2rosbag.py -f testdata/test.fit -v testdata/testvideo.mp4 -b rosbag.bag -s 5
 
 
 
@@ -77,4 +77,14 @@ $ rosbag play --clock --pause rosbag.bag
 MAIN ISSUES
 when using fit2ros, adjust the deltatime parameter to slow the publication of topics, please be aware that the publication
 of topics is no performed in real time.
+
+
+EXAMPLES:
+Create a rosbag file downsampling video fps by 5
+python fit2rosbag.py -f testdata/test.fit -v testdata/testvideo.MP4 -b testdata/testbag.bag -s 5
+
+
+Publish to ROS, also downsample video fps by 30
+python fit2ros.py -f testdata/test.fit -v testdata/testvideo.MP4 -s 30
+
 
