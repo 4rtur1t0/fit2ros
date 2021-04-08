@@ -7,7 +7,7 @@
     $python fit2rosbag.py -f testdata/test.fit -v testdata/testvideo.mp4 -b rosbag.bag
 
     USAGE:
-    fit2ros.py -f <fitfile> -v <videofile>
+    fit2rospublish.py -f <fitfile> -v <videofile>
 
     --fitfile: file in FIT GARMIN format.
     --videofile: the video in any format readable by Opencv.
@@ -23,6 +23,7 @@ import getopt
 import rospy
 import numpy as np
 
+
 def get_command_line_args(argv):
     fitfilename = ''
     videofilename = ''
@@ -33,7 +34,7 @@ def get_command_line_args(argv):
     except getopt.GetoptError:
         print('fit2ros: publish fit data in ROS ecosystem')
         print('USAGE:')
-        print('fit2ros.py -f <fitfile> -v <videofile> -d <delta> -s <sampling>')
+        print('fit2rospublish.py -f <fitfile> -v <videofile> -d <delta> -s <sampling>')
         print('optional: use -d, --delta <seconds> to specify a delay between consecutive data publishing.')
         print('optional: use -s, --sampling <samples> to specify the resamling. P.e. 30 means that 1 out of 30 '
               'images are published.')
@@ -42,7 +43,7 @@ def get_command_line_args(argv):
         if opt == '-h':
             print('fit2ros: publish fit data in ROS ecosystem')
             print('USAGE:')
-            print('fit2ros.py -f <fitfile> -v <videofile>')
+            print('fit2rospublish.py -f <fitfile> -v <videofile>')
             print('optional: use -d, --delta <seconds> to specify a delay between consecutive data publishing.')
             print('optional: use -s, --sampling <samples> to specify the resamling. P.e. 30 means that 1 out of 30 '
                   'images are published.')

@@ -20,6 +20,12 @@ def convert_utc_to_epoch(utc_timestamp):
     return seconds_from_epoch
 
 
+def convert_utc_to_epoch_ns(utc_timestamp):
+    unix_epoch = datetime.datetime(1970, 1, 1)
+    log_dt = utc_timestamp
+    seconds_from_epoch = (log_dt - unix_epoch).total_seconds()*1e9
+    return seconds_from_epoch
+
 def convert_epoch_to_utc(utc_epoch):
     unix_epoch = datetime.datetime(1970, 1, 1)
     return unix_epoch + datetime.timedelta(seconds=utc_epoch)
