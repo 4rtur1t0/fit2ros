@@ -77,7 +77,7 @@ class GPSDataList():
         self.index_list = []
         self.data_list = []
         self.data_type_list = []
-        self.build_gps_lists()
+        #self.build_gps_lists()
 
     def build_gps_lists(self):
         """

@@ -11,28 +11,6 @@ class EurocSaver():
         self.euroc_directory = euroc_directory
         self.images_directory = euroc_directory + '/mav0/cam0/data'
 
-    # def create_directories(self):
-    #     try:
-    #         os.mkdir(self.euroc_directory)
-    #     except OSError:
-    #         print("Creation of the directory %s failed" % self.euroc_directory)
-    #     else:
-    #         print("Successfully created the directory %s " % self.euroc_directory)
-    #
-    #     try:
-    #         os.makedirs(self.euroc_directory+'/mav0/'+'/cam0')
-    #     except OSError:
-    #         print("Creation of the directory %s failed" % self.euroc_directory)
-    #     else:
-    #         print("Successfully created the directory %s " % self.euroc_directory)
-    #
-    #     try:
-    #         os.makedirs(self.euroc_directory+'/mav0/'+'/cam1')
-    #     except OSError:
-    #         print("Creation of the directory %s failed" % self.euroc_directory)
-    #     else:
-    #         print("Successfully created the directory %s " % self.euroc_directory)
-
     def save_gps(self, gps_data):
         try:
             os.makedirs(self.euroc_directory+'/mav0/'+'/gps0')
@@ -80,6 +58,7 @@ class EurocSaver():
         epoch_list = []
         filenames = []
         for i in range(0, video_data.get_number_of_frames(), 1):
+            print('Saved ', 100*i/video_data.get_number_of_frames(), '%', end='\r')
             success, image = video_data.get_next_frame()
             save_image = video_indexes.pop(0)
             if success and save_image:

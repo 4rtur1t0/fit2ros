@@ -19,8 +19,8 @@ import rospy
 
 
 def get_command_line_args(argv):
-    fitfilename = ''
-    videofilename = ''
+    fitfilename = None
+    videofilename = None
     out_euroc_dir = '/euroc'
     # no downsampling by default in video frames
     downsample = 1
@@ -49,7 +49,7 @@ def get_command_line_args(argv):
         elif opt in ("-v", "--videofile"):
             videofilename = arg
         elif opt in ("-e", "--eurocdir"):
-            rosbag = arg
+            out_euroc_dir = arg
         elif opt in ("-s", "--sampling"):
             downsample = int(arg)
     #fitfilename = 'testdata/test.fit'
@@ -98,51 +98,63 @@ def save_euroc(euroc_saver, gps_data, video_data, downsamplevideo):
     euroc_saver.save_gps(gps_data)
     print('SAVING VIDEO IMAGES!')
     euroc_saver.save_video_images(video_data, downsamplevideo)
-
     print('FINISHED!')
 
 
 def save_images(fitfilename, videofilename, downsamplevideo, output_euroc_dir):
-    # Load the FIT file
-    fitobject = fitparse.FitFile(fitfilename)
+    # if fit file is provided
+    # all times are taken from the fit file
+    if fitfilename is not None:
+        # Load the FIT file
+        fitobject = fitparse.FitFile(fitfilename)
 
-    # start by finding the start and stop times in the system. For the VIRB 360 these times should be expressed
-    # in seconds and milliseconds.
-    video_start_time, video_stop_time = get_properties.get_video_start_stop_times(fitobject)
-    print('FOUND TIMES')
-    print('start_time', video_start_time, ' (s)')
-    print('stop_time', video_stop_time, ' (s)')
+        # start by finding the start and stop times in the system. For the VIRB 360 these times should be expressed
+        # in seconds and milliseconds.
+        video_start_time, video_stop_time = get_properties.get_video_start_stop_times(fitobject)
+        print('FOUND TIMES')
+        print('start_time', video_start_time, ' (s)')
+        print('stop_time', video_stop_time, ' (s)')
+        # get the correlation between system time and UTC time. This correlation occurs whenever the VIRB is able to get
+        # a nice GPS signal
+        # returning the UTC time for which system time is zero
+        system_utc_time_origin = get_properties.get_timestamp_correlation(fitobject)
+        # transform video times to UTC
+        video_start_utc_time = time_operations.convert_system_seconds_to_utc(system_utc_time_origin=system_utc_time_origin,
+                                                                             seconds_time=video_start_time)
+        video_stop_utc_time = time_operations.convert_system_seconds_to_utc(system_utc_time_origin=system_utc_time_origin,
+                                                                            seconds_time=video_stop_time)
+        print('Video start time is: ', video_start_utc_time)
+        print('Video stop time is: ', video_stop_utc_time)
 
-    # get the correlation between system time and UTC time. This correlation occurs whenever the VIRB is able to get
-    # a nice GPS signal
-    # returning the UTC time for which system time is zero
-    system_utc_time_origin = get_properties.get_timestamp_correlation(fitobject)
-    # transform video times to UTC
-    video_start_utc_time = time_operations.convert_system_seconds_to_utc(system_utc_time_origin=system_utc_time_origin,
-                                                                         seconds_time=video_start_time)
-    video_stop_utc_time = time_operations.convert_system_seconds_to_utc(system_utc_time_origin=system_utc_time_origin,
-                                                                        seconds_time=video_stop_time)
-    print('Video start time is: ', video_start_utc_time)
-    print('Video stop time is: ', video_stop_utc_time)
+        # GPS READINGS ARE IN UTC!
+        gps_data = gps_messages.GPSDataList(fitobject)
+        gps_data.build_gps_lists()
+        # create camera frames, all times are referred to video_start_utc_time
+        video_data = videoframes.VideoFrames(videofilename, video_start_utc_time)
 
-    # GPS READINGS ARE IN UTC!
-    gps_data = gps_messages.GPSDataList(fitobject)
-    #df_gps = gps_data.get_pandas_df()
+        # open now video to get frames
+        video_data.open_video_capture()
+        # save in Euroc format
+        euroc_saver = EurocSaver(euroc_directory=output_euroc_dir)
+        save_euroc(euroc_saver, gps_data, video_data, downsamplevideo)
 
-    # create camera frames, all times are referred to video_start_utc_time
-    video_data = videoframes.VideoFrames(videofilename, video_start_utc_time)
-    #df_video = video_data.get_pandas_df()
+        print('\n---')
+        print('FINISHED! CHECK THE GENERATED EUROC DIRECTORY!')
+    # if no fit file is provided, just refer everything to 01/01/1970
+    # no gps data is saved
+    else:
+        gps_data = gps_messages.GPSDataList(None)
+        video_start_utc_time = time_operations.convert_epoch_to_utc(0)
+        # create camera frames, all times are referred to video_start_utc_time
+        video_data = videoframes.VideoFrames(videofilename, video_start_utc_time)
+        # open now video to get frames
+        video_data.open_video_capture()
+        # save in Euroc format
+        euroc_saver = EurocSaver(euroc_directory=output_euroc_dir)
+        save_euroc(euroc_saver, gps_data, video_data, downsamplevideo)
 
-    #df_global = pd.concat([df_gps, df_video])
-    #df_global = df_global.sort_values(by=['epoch'])
-    # open now video to get frames
-    video_data.open_video_capture()
-
-    euroc_saver = EurocSaver(euroc_directory=output_euroc_dir)
-    save_euroc(euroc_saver, gps_data, video_data, downsamplevideo)
-
-    print('\n---')
-    print('FINISHED! CHECK THE GENERATED ROSBAG FILE!')
+        print('\n---')
+        print('FINISHED! CHECK THE GENERATED EUROC DIRECTORY!')
 
 
 if __name__ == '__main__':
