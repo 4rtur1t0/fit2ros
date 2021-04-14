@@ -3,13 +3,14 @@ import pandas as pd
 import cv2
 import numpy as np
 
+
 class EurocSaver():
     """
     Class that saves FIT information (fit file and video file) to EUROC format.
     """
-    def __init__(self, euroc_directory=None):
+    def __init__(self, euroc_directory=None, camera_directory=None):
         self.euroc_directory = euroc_directory
-        self.images_directory = euroc_directory + '/mav0/cam0/data'
+        self.images_directory = euroc_directory + '/mav0' + camera_directory
 
     def save_gps(self, gps_data):
         try:
@@ -39,14 +40,14 @@ class EurocSaver():
 
     def save_video_images(self, video_data, downsamplevideo):
         try:
-            os.makedirs(self.euroc_directory+'/mav0/'+'/cam0')
+            os.makedirs(self.euroc_directory + '/mav0')
         except OSError:
             print("Creation of the directory %s failed" % self.euroc_directory)
         else:
             print("Successfully created the directory %s " % self.euroc_directory)
 
         try:
-            os.makedirs(self.images_directory)
+            os.makedirs(self.images_directory + '/data')
         except OSError:
             print("Creation of the directory %s failed" % self.images_directory)
         else:
@@ -70,7 +71,7 @@ class EurocSaver():
         raw_data = {'timestamp': epoch_list,
                     'filenames': filenames}
         df = pd.DataFrame(raw_data, columns=['timestamp', 'filenames'])
-        df.to_csv(self.euroc_directory+'/mav0/cam0/data.csv', index=False, header=['#timestamp [ns]', 'filenames'])
+        df.to_csv(self.images_directory + '/data.csv', index=False, header=['#timestamp [ns]', 'filenames'])
         print('\n---')
 
     def save_image_to_dir(self, image, imagename):
@@ -80,7 +81,7 @@ class EurocSaver():
         :param epoch:
         :return:
         """
-        filename = self.images_directory + '/' + imagename
+        filename = self.images_directory + '/data/' + imagename
         cv2.imwrite(filename, image)
 
 

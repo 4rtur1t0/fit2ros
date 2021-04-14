@@ -14,7 +14,7 @@ $roscore
 b) 
 c) publish from Fitfile and video file
 
-python fit2ros.py -f ../virb360/s0/0.0/2021-03-03-12-53.fit -v ../virb360/s0/0.0/2021-03-03-12-53_front.MP4 -s 60
+python fit2rospublish.py -f ../virb360/s0/0.0/2021-03-03-12-53.fit -v ../virb360/s0/0.0/2021-03-03-12-53_front.MP4 -s 60
 
 
 
