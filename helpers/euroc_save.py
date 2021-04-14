@@ -25,7 +25,10 @@ class EurocSaver():
         epoch_list = []
         for i in range(0, len(gps_data.data_list), 1):
             print('Completed: ', 100.0 * i / len(gps_data.data_list), '%', end='\r')
-            epoch_list.append(int(gps_data.epoch_list[i]*1000))
+            tiempo = int(gps_data.epoch_list[i]*1000)
+            s1 = f'{tiempo:019d}'
+            #1403715273262142976
+            epoch_list.append(s1)
             lat_list.append(gps_data.data_list[i].lat)
             lng_list.append(gps_data.data_list[i].lng)
             altitude_list.append(gps_data.data_list[i].altitude)
@@ -63,7 +66,8 @@ class EurocSaver():
             success, image = video_data.get_next_frame()
             save_image = video_indexes.pop(0)
             if success and save_image:
-                epoch = str(int(video_data.epoch_list[i]*1000))
+                epoch = int(video_data.epoch_list[i]*1000)
+                epoch = f'{epoch:019d}'
                 self.save_image_to_dir(image, epoch + '.png')
                 epoch_list.append(epoch)
                 filenames.append(epoch + '.png')
