@@ -3,7 +3,7 @@
 """
 import cv2
 import pandas as pd
-from datetime import datetime
+# from datetime import datetime
 from datetime import timedelta
 from helpers import time_operations
 
@@ -48,9 +48,13 @@ class VideoFrames():
         self.fps = self.vidcap.get(cv2.CAP_PROP_FPS)
         self.frame_count = int(self.vidcap.get(cv2.CAP_PROP_FRAME_COUNT))
         duration = self.frame_count/self.fps
-        print('Building image list! Found duration: ', duration, 's')
+        print(30*'*')
+        print('TIME INFORMATION FROM VIDEO FPS and number of frames')
+        print('DURATION: ', duration, 's')
         print('Found ', self.frame_count, 'frames in video')
+        print(30*'*')
 
+        print('Building image lists! epoch list etc')
         count = 0
         # emulating video frame capture
         while count < self.frame_count:

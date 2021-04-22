@@ -57,11 +57,16 @@ def get_command_line_args(argv):
             out_euroc_dir = arg
         elif opt in ("-s", "--sampling"):
             downsample = int(arg)
-    #fitfilename = 'testdata/test.fit'
-    #fitfilename = None
-    #videofront = 'testdata/testvideo.mp4'
-    #videoback = 'testdata/testvideo.mp4'
-    #out_euroc_dir = 'euroc/'
+    fitfilename = '/media/arvc/50324D7B324D6756/datasets/umhVIRB360/garmin_last/2021-03-25-16-41-44.fit'
+    videofront = '/media/arvc/50324D7B324D6756/datasets/umhVIRB360/garmin_last/V6813138.MP4'
+    videoback =  '/media/arvc/50324D7B324D6756/datasets/umhVIRB360/garmin_last/V6813139.MP4'
+    out_euroc_dir = '/media/arvc/50324D7B324D6756/datasets/umhVIRB360/garmin_last/s1/0'
+
+    # fitfilename = '/home/arvc/Escritorio/datasets/umhVIRB360/s1/1/2021-03-25-16-26.fit'
+    # videofront = '/home/arvc/Escritorio/datasets/umhVIRB360/s1/1/front.MP4'
+    # videoback = '/home/arvc/Escritorio/datasets/umhVIRB360/s1/1/back.MP4'
+    # out_euroc_dir = 'euroc/'
+
     print('FIT filename is: ', fitfilename)
     print('Video front filename: ', videofront)
     print('Video back filename: ', videoback)
@@ -121,9 +126,14 @@ def save_images(fitfilename, videofront, videoback, downsamplevideo, output_euro
         # start by finding the start and stop times in the system. For the VIRB 360 these times should be expressed
         # in seconds and milliseconds.
         video_start_time, video_stop_time = get_properties.get_video_start_stop_times(fitobject)
+        print(30*'*')
+        print('TIME INFORMATION FROM FIT FILE')
         print('FOUND TIMES')
         print('start_time', video_start_time, ' (s)')
         print('stop_time', video_stop_time, ' (s)')
+        print('DURATION: ', video_stop_time-video_start_time, ' (s)')
+        print(30*'*')
+
         # get the correlation between system time and UTC time. This correlation occurs whenever the VIRB is able to get
         # a nice GPS signal
         # returning the UTC time for which system time is zero
@@ -173,7 +183,7 @@ def save_images(fitfilename, videofront, videoback, downsamplevideo, output_euro
         euroc_saver = EurocSaver(euroc_directory=output_euroc_dir, camera_directory='/cam0')
         save_euroc(euroc_saver, gps_data, video_data, downsamplevideo)
 
-        ####################################33
+        ####################################
         gps_data = gps_messages.GPSDataList(None)
         video_start_utc_time = time_operations.convert_epoch_to_utc(0)
         # create camera frames, all times are referred to video_start_utc_time

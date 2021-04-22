@@ -2,7 +2,6 @@
 
 """
 import datetime
-#from datetime import datetime
 import pandas as pd
 
 
@@ -66,7 +65,6 @@ class GPSDataSample():
 
     def get_epoch_time(self):
         return self.epoch
-
 
 
 class GPSDataList():

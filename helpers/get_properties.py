@@ -77,6 +77,7 @@ def get_video_start_stop_times(fitfile):
     :param fitfile:
     :return:
     """
+    a = set()
     camera_events_start = []
     camera_events_stop = []
     # Iterate over all messages of type "camera_event"
@@ -86,6 +87,10 @@ def get_video_start_stop_times(fitfile):
             camera_events_start.append(camera_event)
         elif camera_event.is_stop():
             camera_events_stop.append(camera_event)
+    if len(camera_events_start)==0 or len(camera_events_stop)==0:
+        print('ERROR: COULD NOT GET START AND STOP TIMES OF VIDEO FROM FIT FILE')
+        print('EXITING')
+        exit()
 
     for i in range(0, len(camera_events_start), 1):
         tiempo = camera_events_stop[i].get_time()-camera_events_start[i].get_time()

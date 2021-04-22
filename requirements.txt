@@ -2,4 +2,6 @@ fitparse
 pandas
 cv2
 numpy
+scipy
 rospy
+cartopy

@@ -8,7 +8,7 @@ from std_msgs.msg import Header
 from cv_bridge import CvBridge
 import numpy as np
 import cv2
-import rosbag
+# import rosbag
 
 
 class RosPublisher():
