@@ -57,10 +57,10 @@ def get_command_line_args(argv):
             out_euroc_dir = arg
         elif opt in ("-s", "--sampling"):
             downsample = int(arg)
-    fitfilename = '/media/arvc/50324D7B324D6756/datasets/umhVIRB360/garmin_last/2021-03-25-16-41-44.fit'
-    videofront = '/media/arvc/50324D7B324D6756/datasets/umhVIRB360/garmin_last/V6813138.MP4'
-    videoback =  '/media/arvc/50324D7B324D6756/datasets/umhVIRB360/garmin_last/V6813139.MP4'
-    out_euroc_dir = '/media/arvc/50324D7B324D6756/datasets/umhVIRB360/garmin_last/s1/0'
+    # fitfilename = '/media/arvc/50324D7B324D6756/datasets/umhVIRB360/garmin_last/2021-03-25-16-41-44.fit'
+    # videofront = '/media/arvc/50324D7B324D6756/datasets/umhVIRB360/garmin_last/V6813138.MP4'
+    # videoback =  '/media/arvc/50324D7B324D6756/datasets/umhVIRB360/garmin_last/V6813139.MP4'
+    # out_euroc_dir = '/media/arvc/50324D7B324D6756/datasets/umhVIRB360/garmin_last/s1/0'
 
     # fitfilename = '/home/arvc/Escritorio/datasets/umhVIRB360/s1/1/2021-03-25-16-26.fit'
     # videofront = '/home/arvc/Escritorio/datasets/umhVIRB360/s1/1/front.MP4'
