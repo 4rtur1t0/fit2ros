@@ -3,7 +3,6 @@
 """
 import cv2
 import pandas as pd
-# from datetime import datetime
 from datetime import timedelta
 from helpers import time_operations
 

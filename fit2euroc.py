@@ -26,7 +26,7 @@ def get_command_line_args(argv):
     out_euroc_dir = '/euroc'
     # downsample=1 means no downsampling
     # p.e. downsample = 5 means 1 out of 5 images are kept
-    downsample = 1
+    downsample = 20
     try:
         opts, args = getopt.getopt(argv, "hf:vf:fb:e:s:", ["fitfile=", "videofront=", "videoback=", "eurocdir=", "sampling="])
     except getopt.GetoptError:
@@ -57,15 +57,10 @@ def get_command_line_args(argv):
             out_euroc_dir = arg
         elif opt in ("-s", "--sampling"):
             downsample = int(arg)
-    # fitfilename = '/media/arvc/50324D7B324D6756/datasets/umhVIRB360/garmin_last/2021-03-25-16-41-44.fit'
-    # videofront = '/media/arvc/50324D7B324D6756/datasets/umhVIRB360/garmin_last/V6813138.MP4'
-    # videoback =  '/media/arvc/50324D7B324D6756/datasets/umhVIRB360/garmin_last/V6813139.MP4'
-    # out_euroc_dir = '/media/arvc/50324D7B324D6756/datasets/umhVIRB360/garmin_last/s1/0'
-
-    # fitfilename = '/home/arvc/Escritorio/datasets/umhVIRB360/s1/1/2021-03-25-16-26.fit'
-    # videofront = '/home/arvc/Escritorio/datasets/umhVIRB360/s1/1/front.MP4'
-    # videoback = '/home/arvc/Escritorio/datasets/umhVIRB360/s1/1/back.MP4'
-    # out_euroc_dir = 'euroc/'
+    # fitfilename = '/media/arvc/50324D7B324D6756/datasets/umhVIRB360/fit/s3/0/fitfile.fit'
+    # videofront = '/media/arvc/50324D7B324D6756/datasets/umhVIRB360/fit/s3/0/front.MP4'
+    # videoback = '/media/arvc/50324D7B324D6756/datasets/umhVIRB360/fit/s3/0/back.MP4'
+    # out_euroc_dir = '/media/arvc/50324D7B324D6756/datasets/umhVIRB360/euroc/s3/0'
 
     print('FIT filename is: ', fitfilename)
     print('Video front filename: ', videofront)
@@ -143,8 +138,11 @@ def save_images(fitfilename, videofront, videoback, downsamplevideo, output_euro
                                                                              seconds_time=video_start_time)
         video_stop_utc_time = time_operations.convert_system_seconds_to_utc(system_utc_time_origin=system_utc_time_origin,
                                                                             seconds_time=video_stop_time)
+        print(30*'*')
         print('Video start time is: ', video_start_utc_time)
         print('Video stop time is: ', video_stop_utc_time)
+        print('DURATION: ', (video_stop_utc_time-video_start_utc_time).total_seconds())
+        print(30*'*')
 
         # GPS READINGS ARE IN UTC!
         gps_data = gps_messages.GPSDataList(fitobject)
