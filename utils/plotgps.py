@@ -37,7 +37,7 @@ def get_command_line_args(argv):
             input_euroc_dir = arg
         elif opt in ("-z", "--zoom"):
             zoom = arg
-    input_euroc_dir = '/media/arvc/50324D7B324D6756/datasets/umhVIRB360/euroc/s3/0/'
+    #input_euroc_dir = '/media/arvc/50324D7B324D6756/datasets/umhVIRB360/euroc/s3/0/'
     print('Input EUROC dir: ', input_euroc_dir)
     return input_euroc_dir, zoom
 

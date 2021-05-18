@@ -26,7 +26,7 @@ def get_command_line_args(argv):
     out_euroc_dir = '/euroc'
     # downsample=1 means no downsampling
     # p.e. downsample = 5 means 1 out of 5 images are kept
-    downsample = 20
+    downsample = 2
     try:
         opts, args = getopt.getopt(argv, "hf:vf:fb:e:s:", ["fitfile=", "videofront=", "videoback=", "eurocdir=", "sampling="])
     except getopt.GetoptError:
@@ -57,10 +57,10 @@ def get_command_line_args(argv):
             out_euroc_dir = arg
         elif opt in ("-s", "--sampling"):
             downsample = int(arg)
-    # fitfilename = '/media/arvc/50324D7B324D6756/datasets/umhVIRB360/fit/s3/0/fitfile.fit'
-    # videofront = '/media/arvc/50324D7B324D6756/datasets/umhVIRB360/fit/s3/0/front.MP4'
-    # videoback = '/media/arvc/50324D7B324D6756/datasets/umhVIRB360/fit/s3/0/back.MP4'
-    # out_euroc_dir = '/media/arvc/50324D7B324D6756/datasets/umhVIRB360/euroc/s3/0'
+    # fitfilename = '/media/arvc/50324D7B324D6756/datasets/VIRB360/fit/s2/1/fitfile.fit'
+    # videofront = '/media/arvc/50324D7B324D6756/datasets/VIRB360/fit/s2/1/front.MP4'
+    # videoback = '/media/arvc/50324D7B324D6756/datasets/VIRB360/fit/s2/1/back.MP4'
+    # out_euroc_dir = '/media/arvc/50324D7B324D6756/datasets/VIRB360/euroc/s2/1'
 
     print('FIT filename is: ', fitfilename)
     print('Video front filename: ', videofront)

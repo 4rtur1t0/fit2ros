@@ -25,8 +25,8 @@ class EurocSaver():
         epoch_list = []
         for i in range(0, len(gps_data.data_list), 1):
             print('Completed: ', 100.0 * i / len(gps_data.data_list), '%', end='\r')
-            tiempo = int(gps_data.epoch_list[i]*1000)
-            s1 = f'{tiempo:019d}'
+            tiempo = int(gps_data.epoch_list[i]*1000*1000*1000)
+            s1 = f'{tiempo:013d}'
             #1403715273262142976
             epoch_list.append(s1)
             lat_list.append(gps_data.data_list[i].lat)
@@ -66,8 +66,8 @@ class EurocSaver():
             success, image = video_data.get_next_frame()
             save_image = video_indexes.pop(0)
             if success and save_image:
-                epoch = int(video_data.epoch_list[i]*1000)
-                epoch = f'{epoch:019d}'
+                epoch = int(video_data.epoch_list[i]*1000*1000*1000)
+                epoch = f'{epoch:013d}'
                 self.save_image_to_dir(image, epoch + '.png')
                 epoch_list.append(epoch)
                 filenames.append(epoch + '.png')
@@ -76,6 +76,11 @@ class EurocSaver():
                     'filenames': filenames}
         df = pd.DataFrame(raw_data, columns=['timestamp', 'filenames'])
         df.to_csv(self.images_directory + '/data.csv', index=False, header=['#timestamp [ns]', 'filenames'])
+
+        # caution, saving also timestamps for video images as timestamp.txt
+        raw_data = {'timestamp': epoch_list}
+        df = pd.DataFrame(raw_data, columns=['timestamp'])
+        df.to_csv(self.images_directory + '/timestamps.txt', index=False, header=False)
         print('\n---')
 
     def save_image_to_dir(self, image, imagename):
